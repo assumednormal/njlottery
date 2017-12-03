@@ -45,7 +45,7 @@ func expectedValue(g game) float64 {
 		totalPrizes += prize.WinningTickets
 	}
 
-	percentTicketsRemaining := 1.0 - float64(claimedPrizes/totalPrizes)
+	percentTicketsRemaining := 1.0 - float64(claimedPrizes)/float64(totalPrizes)
 	estimatedRemainingTickets := percentTicketsRemaining * float64(g.TotalTicketsPrinted)
 
 	return remainingCents/float64(100*estimatedRemainingTickets) - float64(g.TicketPrice)/100
