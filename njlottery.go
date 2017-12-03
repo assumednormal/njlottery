@@ -29,12 +29,26 @@ type game struct {
 	ValidationStatus      string      `json:"validationStatus"`
 }
 
+// To calculate expected value, we need to know the total remaining tickets and the
+// total remaining prize amount. The total remaining prize amount is easy given the
+// data available in prizeTier. To estimate total remaining tickets, assume the
+// proportion of prizes claimed is the same as the proportion of tickets purchased.
 func expectedValue(g game) float64 {
-	var totalCents float64
+	var remainingCents float64
+	var claimedPrizes int
+	var totalPrizes int
+
 	for _, prize := range g.PrizeTiers {
-		totalCents += float64((prize.WinningTickets - prize.ClaimedTickets) * prize.PrizeAmount)
+		remainingTickets := prize.WinningTickets - prize.ClaimedTickets
+		remainingCents += float64(remainingTickets * prize.PrizeAmount)
+		claimedPrizes += prize.ClaimedTickets
+		totalPrizes += prize.WinningTickets
 	}
-	return totalCents/float64(100*g.TotalTicketsPrinted) - float64(g.TicketPrice)/100
+
+	percentTicketsRemaining := 1.0 - float64(claimedPrizes/totalPrizes)
+	estimatedRemainingTickets := percentTicketsRemaining * float64(g.TotalTicketsPrinted)
+
+	return remainingCents/float64(100*estimatedRemainingTickets) - float64(g.TicketPrice)/100
 }
 
 type top struct {
