@@ -80,21 +80,10 @@ func main() {
 	json.NewDecoder(resp.Body).Decode(js)
 	defer resp.Body.Close()
 
-	var bestContestName string
-	var bestContestTicketPrice float64
-	var bestContestEV float64 = -100
-
 	for _, g := range js.Games {
 		if g.ValidationStatus == "ACTIVE" {
 			ev := expectedValue(g)
-			if bestContestEV < ev {
-				bestContestName = g.GameName
-				bestContestTicketPrice = float64(g.TicketPrice) / 100
-				bestContestEV = ev
-			}
+			fmt.Printf("%s;%0.2f;%0.2f\n", g.GameName, float64(g.TicketPrice)/100, ev)
 		}
 	}
-
-	fmt.Printf("Contest: %s\nTicket Price ($): %0.2f\nExpected Value ($): %0.2f\n\n",
-		bestContestName, bestContestTicketPrice, bestContestEV)
 }
