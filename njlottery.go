@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type prizeTier struct {
@@ -80,10 +81,11 @@ func main() {
 	json.NewDecoder(resp.Body).Decode(js)
 	defer resp.Body.Close()
 
+	t := time.Now().Unix()
 	for _, g := range js.Games {
 		if g.ValidationStatus == "ACTIVE" {
 			ev := expectedValue(g)
-			fmt.Printf("%s;%0.2f;%0.2f\n", g.GameName, float64(g.TicketPrice)/100, ev)
+			fmt.Printf("%d;%s;%0.2f;%0.2f\n", t, g.GameName, float64(g.TicketPrice)/100, ev)
 		}
 	}
 }
